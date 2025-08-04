@@ -2,6 +2,8 @@ package com.example.lab10.Service;
 
 import com.example.lab10.Model.JobApplication;
 import com.example.lab10.Repository.JobApplicationRepository;
+import com.example.lab10.Repository.JobPostRepository;
+import com.example.lab10.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +22,21 @@ public class JobApplicationService {
 
 
     private final JobApplicationRepository jobApplicationRepository;
-
+    private final UserRepository userRepository;
+    private final JobPostRepository jobPostRepository;
 
     public List<JobApplication> getJobApplication(){
         return jobApplicationRepository.findAll();
     }
 
-    public void addJob(JobApplication jobApplication){
+
+
+    public void addJob(JobApplication jobApplication) {
+        if (!userRepository.existsById(jobApplication.getUserId()) ||
+                !jobPostRepository.existsById(jobApplication.getJobPostingId())) {
+            throw new RuntimeException("User or Job Post does not exist");
+        }
+
         jobApplicationRepository.save(jobApplication);
     }
 

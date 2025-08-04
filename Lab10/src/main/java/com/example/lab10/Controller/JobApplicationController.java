@@ -25,16 +25,21 @@ public class JobApplicationController {
         return ResponseEntity.status(200).body(jobApplicationService.getJobApplication());
     }
 
+
+
     @PostMapping("/add")
     public ResponseEntity<?> addApplication(@RequestBody @Valid JobApplication jobApplication, Errors errors) {
-
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             String message = errors.getFieldError().getDefaultMessage();
             return ResponseEntity.status(400).body(message);
         }
 
-        jobApplicationService.addJob(jobApplication);
-        return ResponseEntity.status(200).body(new ApiResponse("Job Application has been added successfully !"));
+        try {
+            jobApplicationService.addJob(jobApplication);
+            return ResponseEntity.status(200).body(new ApiResponse("Job application submitted successfully!"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body(new ApiResponse(e.getMessage()));
+        }
     }
 
     @PutMapping("/update/{id}")
